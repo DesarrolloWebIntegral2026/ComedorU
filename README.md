@@ -1,0 +1,1 @@
+# ComedorU - Plataforma de comida casera universitaria  Conecta estudiantes con cocineros locales cerca de universidades.  ## Arquitectura: 3 capas (Presentacion, Negocio, Datos)  - Frontend: Angular  - Backend: Node.js + Express  - Base de datos: PostgreSQL 
