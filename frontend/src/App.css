@@ -1,0 +1,258 @@
+.page-shell {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-layout {
+  width: min(1120px, 100%);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  background: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.auth-hero {
+  padding: 44px;
+  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 1.3rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.hero-title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  line-height: 1.15;
+  margin: 0;
+  color: #ffffff;
+}
+
+.hero-text {
+  margin: 0;
+  color: rgba(248, 250, 252, 0.8);
+  font-size: 1rem;
+  max-width: 520px;
+}
+
+.hero-points {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.hero-points li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.auth-card {
+  padding: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: #0f172a;
+}
+
+.auth-card p {
+  margin: 0 0 24px;
+  color: #64748b;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 20px;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.checkbox-row input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 0.95rem;
+}
+
+.auth-links a,
+.privacy-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-links a:hover,
+.privacy-link:hover {
+  text-decoration: underline;
+}
+
+.privacy-shell {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.privacy-card {
+  width: min(1000px, 100%);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.privacy-card h1 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-size: 2rem;
+}
+
+.privacy-card .lead {
+  margin: 0 0 24px;
+  color: #64748b;
+}
+
+.privacy-section {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.privacy-section h3 {
+  margin: 0 0 10px;
+  color: #1e293b;
+  font-size: 1.05rem;
+}
+
+.privacy-section p,
+.privacy-section li {
+  color: #475569;
+}
+
+.privacy-section ul,
+.privacy-section ol {
+  margin: 8px 0 0 18px;
+  padding: 0;
+}
+
+.privacy-section strong {
+  color: #0f172a;
+}
+
+@media (max-width: 900px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-hero {
+    padding: 30px;
+  }
+
+  .auth-card {
+    padding: 28px 24px 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-shell,
+  .privacy-shell {
+    padding: 12px;
+  }
+
+  .auth-hero,
+  .auth-card,
+  .privacy-card {
+    padding: 22px;
+  }
+}
+
