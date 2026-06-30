@@ -1,3 +1,4 @@
+// Control de versiones - Issue #10
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
