@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "start": "node backend/server.js",
-  "dev": "nodemon backend/server.js",
-  "test": "echo \"No hay pruebas configuradas para este issue\" && exit 0",
-  "prepare": "husky"
-},
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "test": "echo \"No hay pruebas configuradas para este issue\" && exit 0",
+    "prepare": "husky"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DesarrolloWebIntegral2026/ComedorU.git"
@@ -36,6 +36,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-validator": "^7.3.2",
     "jsonwebtoken": "^9.0.3"
   }
 }

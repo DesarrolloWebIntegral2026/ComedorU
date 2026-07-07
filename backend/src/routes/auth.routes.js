@@ -13,6 +13,28 @@ router.post('/login', async (req, res) => {
         // Buscamos al usuario e incluimos su rol_id
         const [usuarios] = await db.promise().query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
         const usuarioEncontrado = usuarios[0];
+const express = require('express');
+const { login, profile } = require('../controllers/auth.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
+
+const { loginLimiter } = require('../middlewares/rateLimit');
+
+const validationMiddleware = require('../middlewares/validation.middleware');
+const {
+  validateLogin,
+  validateRole,
+} = require('../middlewares/security.validators');
+
+const router = express.Router();
+
+router.post(
+  '/login',
+  loginLimiter,
+  validateLogin,
+  validateRole,
+  validationMiddleware,
+  login
+);
 
         if (!usuarioEncontrado) {
             await logger.info('LOGIN_FALLIDO', `Intento de inicio de sesión rechazado para la cuenta: ${correo || 'No provista'}`);
