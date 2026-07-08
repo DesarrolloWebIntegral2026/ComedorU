@@ -5,6 +5,11 @@ const authRoutes = require('./routes/auth.routes');
 const clienteRoutes = require('./routes/cliente.routes');
 const vendedorRoutes = require('./routes/vendedor.routes');
 
+// ... Tus otras importaciones de Express y Auth Routes ...
+const menuRoutes = require('./routes/menu.routes');
+
+
+
 const app = express();
 
 app.use(cors());
@@ -21,6 +26,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendedores', vendedorRoutes);
+// Enlace de las rutas de la API REST de menús
+app.use('/api/menus', menuRoutes);
 
 app.use((req, res) => {
   return res.status(404).json({
