@@ -15,6 +15,7 @@ const logger = {
     }
   },
 
+  
   error: async (evento, mensaje) => {
     try {
       const query = 'INSERT INTO bitacora_auditoria (nivel, evento, mensaje) VALUES (?, ?, ?)';
