@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const authRoutes = require('./routes/auth.routes');
 const clienteRoutes = require('./routes/cliente.routes');
 const vendedorRoutes = require('./routes/vendedor.routes');
+const arcoRoutes = require('./routes/arco.routes');
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendedores', vendedorRoutes);
+app.use('/api/arco', arcoRoutes);
 
 /* ===========================
    404

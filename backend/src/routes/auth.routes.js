@@ -11,7 +11,7 @@ router.post('/login', async (req, res) => {
         const { correo, password } = req.body;
 
         // Buscamos al usuario e incluimos su rol_id
-        const [usuarios] = await db.promise().query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+        const [usuarios] = await db.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
         const usuarioEncontrado = usuarios[0];
 const express = require('express');
 const { login, profile } = require('../controllers/auth.controller');
@@ -89,7 +89,7 @@ router.post('/register', async (req, res) => {
         const rol_id = rol === 'Estudiante' ? 1 : 3;
 
         // Verificar si el correo ya existe
-        const [usuariosExistentes] = await db.promise().query('SELECT id FROM usuarios WHERE correo = ?', [correo]);
+        const [usuariosExistentes] = await db.query('SELECT id FROM usuarios WHERE correo = ?', [correo]);
         if (usuariosExistentes.length > 0) {
             return res.status(400).json({ message: "El correo electrónico ya está registrado." });
         }
@@ -100,7 +100,7 @@ router.post('/register', async (req, res) => {
 
         // Guardar usando exactamente los nombres de tus columnas: id, nombre, apellidos, correo, password, telefono, rol_id
         const queryInsert = 'INSERT INTO usuarios (nombre, apellidos, correo, password, telefono, rol_id) VALUES (?, ?, ?, ?, ?, ?)';
-        const [resultado] = await db.promise().query(queryInsert, [nombre, apellidos, correo, passwordEncriptado, telefono || null, rol_id]);
+        const [resultado] = await db.query(queryInsert, [nombre, apellidos, correo, passwordEncriptado, telefono || null, rol_id]);
 
         // AUDITORÍA DE REGISTRO (Issue #14)
         await logger.info('REGISTRO_USUARIO', `Usuario nuevo creado exitosamente con ID: ${resultado.insertId} asignado al rol_id: ${rol_id} (${rol})`);
