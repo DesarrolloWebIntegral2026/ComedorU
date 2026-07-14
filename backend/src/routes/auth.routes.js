@@ -20,7 +20,7 @@ router.post('/login', loginLimiter, validateLogin, validateRole, validationMiddl
     try {
         const { correo, password } = req.body;
 
-        const [usuarios] = await db.promise().query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+        const [usuarios] = await db.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
         const usuarioEncontrado = usuarios[0];
 
         if (!usuarioEncontrado) {
@@ -122,7 +122,7 @@ router.post('/register', [
 
         const rol_id = rol === 'Estudiante' ? 1 : 3;
 
-        const [usuariosExistentes] = await db.promise().query('SELECT id FROM usuarios WHERE correo = ?', [correo]);
+        const [usuariosExistentes] = await db.query('SELECT id FROM usuarios WHERE correo = ?', [correo]);
         if (usuariosExistentes.length > 0) {
             return res.status(400).json({ message: "El correo electrónico ya está registrado." });
         }
@@ -131,7 +131,7 @@ router.post('/register', [
         const passwordEncriptado = await bcrypt.hash(password, salt);
 
         const queryInsert = 'INSERT INTO usuarios (nombre, apellidos, correo, password, telefono, rol_id) VALUES (?, ?, ?, ?, ?, ?)';
-        const [resultado] = await db.promise().query(queryInsert, [nombre, apellidos, correo, passwordEncriptado, telefono || null, rol_id]);
+        const [resultado] = await db.query(queryInsert, [nombre, apellidos, correo, passwordEncriptado, telefono || null, rol_id]);
 
         await logger.info('REGISTRO_USUARIO', `Usuario nuevo creado exitosamente con ID: ${resultado.insertId} asignado al rol_id: ${rol_id} (${rol})`);
 
@@ -203,7 +203,7 @@ router.put('/profile', authMiddleware, [
         }
 
         if (correo) {
-            const [existing] = await db.promise().query('SELECT id FROM usuarios WHERE correo = ? AND id <> ?', [correo, req.user.id]);
+            const [existing] = await db.query('SELECT id FROM usuarios WHERE correo = ? AND id <> ?', [correo, req.user.id]);
             if (existing.length > 0) {
                 return res.status(400).json({ ok: false, message: 'El correo electrónico ya está en uso por otro usuario.' });
             }
@@ -211,7 +211,7 @@ router.put('/profile', authMiddleware, [
 
         const query = `UPDATE usuarios SET ${fields.join(', ')} WHERE id = ?`;
         values.push(req.user.id);
-        await db.promise().query(query, values);
+        await db.query(query, values);
 
         await logger.info('ARCO_RECTIFICACION', `Usuario con ID: ${req.user.id} actualizó su información personal.`);
 
@@ -224,7 +224,7 @@ router.put('/profile', authMiddleware, [
 
 router.delete('/profile', authMiddleware, async (req, res) => {
     try {
-        await db.promise().query('DELETE FROM usuarios WHERE id = ?', [req.user.id]);
+        await db.query('DELETE FROM usuarios WHERE id = ?', [req.user.id]);
         await logger.info('ARCO_CANCELACION', `Usuario con ID: ${req.user.id} canceló su cuenta y solicitó eliminación.`);
         return res.status(200).json({ ok: true, message: 'Cuenta cancelada y datos eliminados.' });
     } catch (error) {

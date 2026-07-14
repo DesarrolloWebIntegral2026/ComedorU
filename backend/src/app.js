@@ -5,7 +5,6 @@ const helmet = require('helmet');
 const authRoutes = require('./routes/auth.routes');
 const clienteRoutes = require('./routes/cliente.routes');
 const vendedorRoutes = require('./routes/vendedor.routes');
-const menuRoutes = require('./routes/menu.routes');
 
 const app = express();
 
@@ -71,6 +70,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/menus', menuRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendedores', vendedorRoutes);
+app.use('/api/arco', arcoRoutes);
 
 /* ===========================
    Manejador de Rutas 404 (Debe ir al final)
