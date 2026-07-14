@@ -45,16 +45,41 @@ function AvisoPrivacidad() {
         <div className="privacy-section">
           <h3>5. Medidas de seguridad</h3>
           <ul>
-            <li>Cifrado de comunicaciones y acceso protegido.</li>
-            <li>Uso de tokens y validación de sesiones.</li>
-            <li>Almacenamiento seguro y controles de integridad.</li>
+            <li>Cifrado de comunicaciones en tránsito (HTTPS/TLS) y cookies seguras para autenticación.</li>
+            <li>Protección en el navegador con políticas de seguridad de cabeceras y control de CORS.</li>
+            <li>Uso de token JWT con expiración y almacenamiento mínimo en el cliente.</li>
+            <li>Contraseñas protegidas con hashing seguro (bcrypt) y validación de datos en el backend.</li>
           </ul>
         </div>
 
         <div className="privacy-section">
-          <h3>6. Derechos ARCO</h3>
+          <h3>6. Principios de minimización y ciclo de vida de datos</h3>
+          <p>
+            Recabamos únicamente los datos mínimos necesarios para operar la plataforma. Los datos se conservan mientras el usuario mantiene una cuenta activa y se eliminan cuando el usuario solicita la cancelación.
+          </p>
+        </div>
+
+        <div className="privacy-section">
+          <h3>7. Derechos ARCO</h3>
           <p>
             Usted podrá acceder, rectificar, cancelar u oponerse al tratamiento de sus datos personales. Para ejercer estos derechos, puede escribir a <strong>privacidad.comedoru@utng.edu.mx</strong>.
+          </p>
+          <p>
+            También contamos con rutas en el backend para consultar y actualizar su perfil, cancelar su cuenta y registrar solicitudes de oposición.
+          </p>
+        </div>
+
+        <div className="privacy-section">
+          <h3>8. Trazabilidad y auditoría</h3>
+          <p>
+            Las acciones clave del sistema se registran en bitácoras de auditoría para garantizar trazabilidad. Esto incluye inicios de sesión, publicaciones de menús, cambios en datos de perfil y solicitudes ARCO.
+          </p>
+        </div>
+
+        <div className="privacy-section">
+          <h3>9. Transferencias de datos</h3>
+          <p>
+            Sus datos no serán vendidos. Solo se comparten con proveedores de servicios o autoridades competentes cuando sea necesario y conforme a la ley.
           </p>
         </div>
       </div>

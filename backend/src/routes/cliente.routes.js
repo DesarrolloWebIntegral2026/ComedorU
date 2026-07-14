@@ -7,7 +7,7 @@ const router = express.Router();
 router.get(
   '/pedidos',
   authMiddleware,
-  rolesMiddleware('cliente'),
+  rolesMiddleware('Estudiante'),
   (req, res) => {
     return res.status(200).json({
       ok: true,

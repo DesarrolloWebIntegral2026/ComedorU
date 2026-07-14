@@ -36,10 +36,20 @@ const login = (req, res) => {
     }
   );
 
+  // ==========================================
+  // CONFIGURACIÓN DE COOKIE SEGURA (OWASP TOP 10)
+  // ==========================================
+  res.cookie('token', token, {
+    httpOnly: true,       // ✓ Bloquea el acceso desde JavaScript (Previene robos por XSS)
+    secure: false,        // ✓ En desarrollo (localhost/HTTP) debe ser false para que el navegador la acepte. En producción (HTTPS) se cambia a true.
+    sameSite: 'none',      // ✓ Directiva estándar para mitigar ataques de falsificación de peticiones en sitios cruzados (CSRF)
+    maxAge: 3600000       // Expiración estricta de 1 hora en milisegundos
+  });
+
   return res.status(200).json({
     ok: true,
     message: 'Inicio de sesión exitoso',
-    token,
+    token, // Se mantiene en el cuerpo por compatibilidad con el estado del FrontEnd
     user: {
       id: user.id,
       nombre: user.nombre,
