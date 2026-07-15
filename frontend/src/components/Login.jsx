@@ -22,14 +22,27 @@ const Login = () => {
         e.preventDefault();
         setError('');
 
+        const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo);
+        if (!correoValido) {
+            setError('Ingresa un correo electrónico válido.');
+            return;
+        }
+
+        if (formData.password.length < 8) {
+            setError('La contraseña debe tener al menos 8 caracteres.');
+            return;
+        }
+
         try {
             const respuesta = await axios.post('http://localhost:3000/api/auth/login', {
                 correo: formData.correo,
                 password: formData.password
+            }, {
+                withCredentials: true
             });
 
-            const { user } = respuesta.data; 
-            localStorage.setItem('usuario', JSON.stringify(user));
+            const { token } = respuesta.data;
+            localStorage.setItem('token', token);
             alert(respuesta.data.message);
             navigate('/dashboard');
 
