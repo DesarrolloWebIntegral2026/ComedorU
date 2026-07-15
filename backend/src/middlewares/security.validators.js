@@ -60,8 +60,8 @@ const validateRole = [
   body('rol')
     .optional()
     .trim()
-    .isIn(['cliente', 'vendedor'])
-    .withMessage('El rol permitido solo puede ser cliente o vendedor'),
+    .isIn(['Estudiante', 'Vendedor'])
+    .withMessage('El rol permitido solo puede ser Estudiante o Vendedor'),
 ];
 
 module.exports = {
