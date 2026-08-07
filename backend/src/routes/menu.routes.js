@@ -1,6 +1,10 @@
 const router = require('express').Router();
+const { body } = require('express-validator');
 const menuRepository = require('../repositories/menu.repository');
 const logger = require('../utils/logger');
+const authMiddleware = require('../middlewares/auth.middleware');
+const rolesMiddleware = require('../middlewares/roles.middleware');
+const validationMiddleware = require('../middlewares/validation.middleware');
 // isssues #19
 
 
@@ -19,13 +23,17 @@ router.get('/', async (req, res) => {
 
 // 2. GET: Obtener menús de un vendedor específico
 
-router.get('/vendedor/:id', async (req, res) => {
+router.get('/vendedor/:id', authMiddleware, rolesMiddleware('Vendedor'), async (req, res) => {
     try {
         const vendedorId = req.params.id;
+        if (parseInt(vendedorId, 10) !== req.user.id) {
+            return res.status(403).json({ message: "No estás autorizado para ver los menús de otro vendedor." });
+        }
+
         const menus = await menuRepository.getByVendedor(vendedorId);
         return res.status(200).json(menus);
     } catch (error) {
-        await logger.error('API_MENU_ERROR', `Error al consultar menús del vendedor ${vendedorId}: ${error.message}`);
+        await logger.error('API_MENU_ERROR', `Error al consultar menús del vendedor ${req.params.id}: ${error.message}`);
         return res.status(500).json({ message: "Error al obtener tus menús." });
     }
 });
@@ -33,17 +41,22 @@ router.get('/vendedor/:id', async (req, res) => {
 
 // 3. POST: Publicar un nuevo menú (Vista del Vendedor)
 
-router.post('/', async (req, res) => {
-    try {
-        const { vendedor_id, titulo, descripcion, precio } = req.body;
+router.post(
+    '/',
+    authMiddleware,
+    rolesMiddleware('Vendedor'),
+    [
+        body('titulo').trim().notEmpty().withMessage('El título del menú es obligatorio.'),
+        body('descripcion').trim().notEmpty().withMessage('La descripción es obligatoria.'),
+        body('precio').isFloat({ gt: 0 }).withMessage('El precio debe ser un número mayor a 0.'),
+    ],
+    validationMiddleware,
+    async (req, res) => {
+        try {
+            const { titulo, descripcion, precio } = req.body;
+            const vendedor_id = req.user.id;
 
-        // Validaciones básicas de campos
-        if (!vendedor_id || !titulo || !descripcion || !precio) {
-            return res.status(400).json({ message: "Todos los campos obligatorios del menú deben ser provistos." });
-        }
-
-        // Ejecución delegada al Repositorio
-        const nuevoMenuId = await menuRepository.create({ vendedor_id, titulo, descripcion, precio });
+            const nuevoMenuId = await menuRepository.create({ vendedor_id, titulo, descripcion, precio });
 
         // Auditoría segura (Issue #14): Almacena ID del elemento sin revelar texto de la receta
         await logger.info('MENU_PUBLICADO', `Menú diario ID: ${nuevoMenuId} creado con éxito por el vendedor ID: ${vendedor_id}`);
@@ -62,10 +75,11 @@ router.post('/', async (req, res) => {
 
 // 4. PUT: Editar un menú existente
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, rolesMiddleware('Vendedor'), async (req, res) => {
     try {
         const menuId = req.params.id;
-        const { vendedor_id, titulo, descripcion, precio, disponible } = req.body;
+        const { titulo, descripcion, precio, disponible } = req.body;
+        const vendedor_id = req.user.id;
 
         const modificado = await menuRepository.update(menuId, vendedor_id, { titulo, descripcion, precio, disponible });
 
@@ -85,10 +99,10 @@ router.put('/:id', async (req, res) => {
 
 // 5. DELETE: Eliminar un menú
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, rolesMiddleware('Vendedor'), async (req, res) => {
     try {
         const menuId = req.params.id;
-        const { vendedor_id } = req.body; // El ID del vendedor debe venir en el cuerpo para validar propiedad
+        const vendedor_id = req.user.id;
 
         const eliminado = await menuRepository.delete(menuId, vendedor_id);
 

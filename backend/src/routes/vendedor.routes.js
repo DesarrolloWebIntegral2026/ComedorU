@@ -7,7 +7,7 @@ const router = express.Router();
 router.get(
   '/menus',
   authMiddleware,
-  rolesMiddleware('vendedor'),
+  rolesMiddleware('Vendedor'),
   (req, res) => {
     return res.status(200).json({
       ok: true,
