@@ -5,11 +5,9 @@ import '../styles/Dashboard.css'; // Importamos los estilos separados
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    
-    // Obtenemos los datos del usuario guardados en el Login
-    const usuarioLogueado = JSON.parse(localStorage.getItem('usuario')) || null;
+    const token = localStorage.getItem('token');
 
-    // Estados
+    const [usuario, setUsuario] = useState(null);
     const [menus, setMenus] = useState([]);
     const [nuevoMenu, setNuevoMenu] = useState({
         titulo: '',
@@ -17,57 +15,98 @@ const Dashboard = () => {
         precio: ''
     });
 
-    // Proteger la ruta: Si no hay usuario, redirigir al login
     useEffect(() => {
-        if (!usuarioLogueado) {
+        if (!token) {
             navigate('/');
         } else {
-            cargarMenus();
+            cargarPerfilYMenus();
         }
-    }, []);
+    }, [token, navigate]);
 
-    // Función para conectar con la API REST Backend
-    const cargarMenus = async () => {
+    const cargarPerfilYMenus = async () => {
+        try {
+            const respuesta = await axios.get('http://localhost:3000/api/auth/profile', {
+                headers: {
+                    Authorization: token ? `Bearer ${token}` : ''
+                },
+                withCredentials: true
+            });
+
+            setUsuario(respuesta.data.user);
+            cargarMenus(respuesta.data.user);
+        } catch (error) {
+            console.error('Error al cargar perfil:', error);
+            localStorage.removeItem('token');
+            navigate('/');
+        }
+    };
+
+    const cargarMenus = async (usuarioActual) => {
         try {
             let url = 'http://localhost:3000/api/menus';
-            
-            // Si es vendedor, cargamos solo sus menús mediante su ID
-            if (usuarioLogueado.rol_id === 3) {
-                url = `http://localhost:3000/api/menus/vendedor/${usuarioLogueado.id}`;
+
+            if (usuarioActual && usuarioActual.rol_id === 3) {
+                url = `http://localhost:3000/api/menus/vendedor/${usuarioActual.id}`;
             }
 
-            const respuesta = await axios.get(url);
+            const respuesta = await axios.get(url, {
+                headers: {
+                    Authorization: token ? `Bearer ${token}` : ''
+                },
+                withCredentials: true
+            });
             setMenus(respuesta.data);
         } catch (error) {
             console.error("Error al cargar menús desde la API:", error);
         }
     };
 
-    // Manejar el envío del formulario (Solo Vendedor)
     const handleSubirMenu = async (e) => {
         e.preventDefault();
+
+        if (!nuevoMenu.titulo.trim() || !nuevoMenu.descripcion.trim() || !nuevoMenu.precio) {
+            alert('Por favor completa todos los campos antes de publicar el menú.');
+            return;
+        }
+
+        if (isNaN(Number(nuevoMenu.precio)) || Number(nuevoMenu.precio) <= 0) {
+            alert('El precio debe ser un número mayor a 0.');
+            return;
+        }
+
         try {
+            if (!usuario) {
+                alert('No se pudo identificar al usuario. Por favor inicia sesión de nuevo.');
+                navigate('/');
+                return;
+            }
+
             await axios.post('http://localhost:3000/api/menus', {
-                vendedor_id: usuarioLogueado.id,
+                vendedor_id: usuario.id,
                 titulo: nuevoMenu.titulo,
                 descripcion: nuevoMenu.descripcion,
                 precio: parseFloat(nuevoMenu.precio)
+            }, {
+                headers: {
+                    Authorization: token ? `Bearer ${token}` : ''
+                },
+                withCredentials: true
             });
 
             alert("¡Menú publicado con éxito en la plataforma!");
             setNuevoMenu({ titulo: '', descripcion: '', precio: '' }); // Limpiar campos
-            cargarMenus(); // Recargar la lista
+            cargarMenus(usuario); // Recargar la lista con el usuario actual
         } catch (error) {
             alert("Error al subir el menú.");
         }
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('usuario');
+        localStorage.removeItem('token');
         navigate('/');
     };
 
-    if (!usuarioLogueado) return null;
+    if (!usuario) return null;
 
     return (
         <div className="dashboard-container">
@@ -75,13 +114,13 @@ const Dashboard = () => {
             <nav className="dashboard-navbar">
                 <div>
                     <h2>ComedorU - Panel de Control</h2>
-                    <span>Bienvenido(a), <strong>{usuarioLogueado.nombre}</strong> ({usuarioLogueado.rol_id === 1 ? 'Estudiante' : 'Vendedor'})</span>
+                    <span>Bienvenido(a), <strong>{usuario.nombre}</strong> ({usuario.rol_id === 1 ? 'Estudiante' : 'Vendedor'})</span>
                 </div>
                 <button className="logout-btn" onClick={handleLogout}>Cerrar Sesión</button>
             </nav>
 
             {/* VISTA EXCLUSIVA DEL VENDEDOR: Formulario para crear menú */}
-            {usuarioLogueado.rol_id === 3 && (
+            {usuario.rol_id === 3 && (
                 <div className="form-vendedor">
                     <h3>📢 Publicar Menú Diario del Comedor</h3>
                     <form onSubmit={handleSubirMenu}>
@@ -104,7 +143,7 @@ const Dashboard = () => {
 
             {/* VISTA COMPARTIDA: Listado de Tarjetas de Menús */}
             <div className="content-section">
-                <h3>{usuarioLogueado.rol_id === 3 ? '📋 Tus Menús Publicados' : '🍽️ Menús Disponibles Hoy'}</h3>
+                <h3>{usuario.rol_id === 3 ? '📋 Tus Menús Publicados' : '🍽️ Menús Disponibles Hoy'}</h3>
                 
                 {menus.length === 0 ? (
                     <p>No hay menús registrados en este momento.</p>
@@ -118,7 +157,7 @@ const Dashboard = () => {
                                 </div>
                                 <div>
                                     <p className="menu-precio">${menu.precio}</p>
-                                    {usuarioLogueado.rol_id === 1 && (
+                                    {usuario.rol_id === 1 && (
                                         <small style={{color: '#6c757d'}}>Publicado por: {menu.vendedor_nombre || 'Vendedor del comedor'}</small>
                                     )}
                                 </div>

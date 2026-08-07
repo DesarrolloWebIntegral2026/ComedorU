@@ -5,14 +5,12 @@ const helmet = require('helmet');
 const authRoutes = require('./routes/auth.routes');
 const clienteRoutes = require('./routes/cliente.routes');
 const vendedorRoutes = require('./routes/vendedor.routes');
-const arcoRoutes = require('./routes/arco.routes');
 
 const app = express();
 
 /* ===========================
-   Helmet
+   Helmet (Seguridad de Cabeceras)
 =========================== */
-
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -23,35 +21,40 @@ app.use(
         imgSrc: ["'self'", "data:"],
       },
     },
-
     frameguard: {
       action: 'deny',
     },
-
     hidePoweredBy: true,
-
     noSniff: true,
-
     referrerPolicy: {
       policy: 'no-referrer',
     },
-
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
     crossOriginEmbedderPolicy: false,
   })
 );
 
 /* ===========================
-   Middlewares
+   Middlewares Globales
 =========================== */
 
-app.use(cors());
+// 🔥 CONFIGURACIÓN CORRECTA DE CORS PARA COOKIES (Ubicada al inicio)
+app.use(cors({
+  origin: 'http://localhost:5173', // Permite explícitamente tu Frontend de Vite
+  credentials: true,               // Autoriza el intercambio de cookies seguras
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 
 /* ===========================
    Ruta principal
 =========================== */
-
 app.get('/', (req, res) => {
   return res.status(200).json({
     ok: true,
@@ -61,18 +64,17 @@ app.get('/', (req, res) => {
 });
 
 /* ===========================
-   Rutas
+   Rutas de la Aplicación
 =========================== */
-
 app.use('/api/auth', authRoutes);
+app.use('/api/menus', menuRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendedores', vendedorRoutes);
 app.use('/api/arco', arcoRoutes);
 
 /* ===========================
-   404
+   Manejador de Rutas 404 (Debe ir al final)
 =========================== */
-
 app.use((req, res) => {
   return res.status(404).json({
     ok: false,

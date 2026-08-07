@@ -16,7 +16,8 @@ const Register = () => {
     });
 
     const [errores, setErrores] = useState({});
-    const [mensajeServidor, setMensajeServidor] = useState('');
+    const [erroresServidor, setErroresServidor] = useState([]); // Maneja el array de express-validator
+    const [mensajeGeneral, setMensajeGeneral] = useState('');
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -41,29 +42,36 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMensajeServidor('');
+        setErroresServidor([]);
+        setMensajeGeneral('');
 
         if (!validarFormulario()) return;
 
         try {
-            // Petición al backend corriendo en el puerto 3000
             const respuesta = await axios.post('http://localhost:3000/api/auth/register', {
                 nombre: formData.nombre,
                 apellidos: formData.apellidos,
                 correo: formData.correo,
                 password: formData.password,
-                telefono: formData.telefono,
+                telefono: formData.telefono || null, // Se envía null si está vacío
                 rol: formData.rol
             });
 
             alert(respuesta.data.message);
-            navigate('/'); // Redirige al Login tras el registro exitoso
+            navigate('/'); 
 
         } catch (error) {
-            if (error.response && error.response.data) {
-                setMensajeServidor(error.response.data.message);
+            if (error.response && error.response.status === 400) {
+                // Si el backend devuelve errores de express-validator (Array)
+                if (error.response.data.errors) {
+                    setErroresServidor(error.response.data.errors);
+                } else if (error.response.data.message) {
+                    setMensajeGeneral(error.response.data.message);
+                }
+            } else if (error.response && error.response.status === 500) {
+                setMensajeGeneral("Error interno del servidor. Inténtalo más tarde.");
             } else {
-                setMensajeServidor("Error al conectar con el servidor.");
+                setMensajeGeneral("Error al conectar con el servidor.");
             }
         }
     };
@@ -86,7 +94,24 @@ const Register = () => {
                 <h1 style={{ fontWeight: 'bold', marginBottom: '5px' }}>Registro</h1>
                 <p style={{ color: '#6c757d', marginBottom: '25px' }}>Completa tus datos para comenzar.</p>
 
-                {mensajeServidor && <div className="alert alert-danger" style={{ color: 'red', marginBottom: '15px' }}>{mensajeServidor}</div>}
+                {/* Mensaje de Error Único o del Servidor */}
+                {mensajeGeneral && (
+                    <div className="alert alert-danger" style={{ color: 'red', backgroundColor: '#f8d7da', padding: '10px', borderRadius: '5px', marginBottom: '15px', border: '1px solid #f5c6cb' }}>
+                        {mensajeGeneral}
+                    </div>
+                )}
+
+                {/* Caja de Errores Múltiples de Express-Validator */}
+                {erroresServidor.length > 0 && (
+                    <div className="alert alert-danger" style={{ color: '#721c24', backgroundColor: '#f8d7da', padding: '12px', borderRadius: '5px', marginBottom: '15px', border: '1px solid #f5c6cb' }}>
+                        <strong style={{ display: 'block', marginBottom: '5px' }}>Por favor corrige las siguientes inconsistencias:</strong>
+                        <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                            {erroresServidor.map((err, index) => (
+                                <li key={index} style={{ fontSize: '14px' }}>{err}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '500px' }}>
                     
@@ -125,7 +150,7 @@ const Register = () => {
                         <small style={{ color: '#6c757d', display: 'block', marginTop: '4px' }}>* Únicamente requerido para activar verificación en dos pasos (2FA) o alertas de entrega.</small>
                     </div>
 
-                    {/* Selección de Rol Restringido */}
+                    {/* Selección de Rol */}
                     <div>
                         <label style={{ display: 'block', fontWeight: '500' }}>¿Cómo usarás la plataforma? *</label>
                         <select name="rol" className="form-control" value={formData.rol} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ced4da', backgroundColor: 'white' }}>
