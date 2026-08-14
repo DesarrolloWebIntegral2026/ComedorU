@@ -5,6 +5,9 @@ const helmet = require('helmet');
 const authRoutes = require('./routes/auth.routes');
 const clienteRoutes = require('./routes/cliente.routes');
 const vendedorRoutes = require('./routes/vendedor.routes');
+const menuRoutes = require('./routes/menu.routes');
+const arcoRoutes = require('./routes/arco.routes');
+const pedidoRoutes = require('./routes/pedido.routes');
 
 const app = express();
 
@@ -42,10 +45,21 @@ app.use(
    Middlewares Globales
 =========================== */
 
-// 🔥 CONFIGURACIÓN CORRECTA DE CORS PARA COOKIES (Ubicada al inicio)
+// 🔥 CONFIGURACIÓN DE CORS PARA COOKIES Y PUERTOS DE VITE (5173, 5174, etc.)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173', // Permite explícitamente tu Frontend de Vite
-  credentials: true,               // Autoriza el intercambio de cookies seguras
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Bloqueado por CORS: origen no permitido'));
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -71,6 +85,7 @@ app.use('/api/menus', menuRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendedores', vendedorRoutes);
 app.use('/api/arco', arcoRoutes);
+app.use('/api/pedidos', pedidoRoutes);
 
 /* ===========================
    Manejador de Rutas 404 (Debe ir al final)

@@ -48,7 +48,7 @@ const Register = () => {
         if (!validarFormulario()) return;
 
         try {
-            const respuesta = await axios.post('http://localhost:3000/api/auth/register', {
+            const respuesta = await axios.post('/auth/register', {
                 nombre: formData.nombre,
                 apellidos: formData.apellidos,
                 correo: formData.correo,
